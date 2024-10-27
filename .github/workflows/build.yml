@@ -1,0 +1,45 @@
+name: Build Wheels
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_wheels:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]   # 使用 Linux 和 Windows 环境
+        python-version: [3.7, 3.8, 3.9, 3.10] # 需要支持的 Python 版本
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install cibuildwheel
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cibuildwheel
+
+      - name: Build wheels
+        env:
+          CIBW_BUILD: "cp${{ matrix.python-version | replace('.', '') }}-*"
+          CIBW_SKIP: "pp* *_i686"  # 跳过 PyPy 和 i686 架构
+          CIBW_PLATFORM: ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+        run: |
+          cibuildwheel --output-dir wheelhouse
+
+      - name: Upload wheels as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-wheels
+          path: wheelhouse/*.whl
