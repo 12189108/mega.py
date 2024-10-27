@@ -33,7 +33,8 @@ jobs:
 
       - name: Build wheels
         env:
-          CIBW_BUILD: "cp${{ matrix.python-version | replace('.', '') }}-*"
+          # 指定 Python 版本格式，不进行替换
+          CIBW_BUILD: "cp${{ matrix.python-version | split('.')[0] }}${{ matrix.python-version | split('.')[1] }}-*"
           CIBW_SKIP: "pp* *_i686"  # 跳过 PyPy 和 i686 架构
           CIBW_PLATFORM: ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
         run: |
