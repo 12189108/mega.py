@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]   # 使用 Linux 和 Windows 环境
-        python-version: [3.7, 3.8, 3.9, 3.10] # 需要支持的 Python 版本
+        python-version: ['3.7', '3.8', '3.9', '3.10'] # 需要支持的 Python 版本
 
     steps:
       - name: Checkout code
